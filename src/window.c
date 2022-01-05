@@ -222,15 +222,7 @@ int XMapWindow(Display* display, Window window) {
             SDL_SetWindowIcon(windowStruct->sdlWindow, windowStruct->icon);
         }
         // FIXME: why this is not working properly when done in XChangeWindowAttributes ?
-        if (windowStruct->eventMask & KeyPressMask || windowStruct->eventMask & KeyReleaseMask) {
-            // TODO: Implement real system here
-//            if (!SDL_IsTextInputActive()) {
-//                SDL_StartTextInput();
-//            }
-            // FIXME: cf. comment in XSelectInput
-            SDL_StopTextInput();
-            setKeyboardFocus(window);
-        }
+        
     } else { /* Mapping a window that is not a top level window  */
         Window parent = GET_PARENT(window);
         if (GET_WINDOW_STRUCT(parent)->mapState == Mapped) {
@@ -834,6 +826,15 @@ int XChangeWindowAttributes(Display* display, Window window, unsigned long value
             LOG("Change window attributes event: %ld\n",
                 attributes->event_mask & SubstructureRedirectMask);
             GET_WINDOW_STRUCT(window)->eventMask = attributes->event_mask;
+            if (GET_WINDOW_STRUCT(window)->eventMask & KeyPressMask || GET_WINDOW_STRUCT(window)->eventMask & KeyReleaseMask) {
+                // TODO: Implement real system here
+    //            if (!SDL_IsTextInputActive()) {
+    //                SDL_StartTextInput();
+    //            }
+                // FIXME: cf. comment in XSelectInput
+                SDL_StopTextInput();
+                setKeyboardFocus(window);
+            }
         }
         // TODO: Interpret more values
     }
